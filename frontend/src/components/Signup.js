@@ -6,9 +6,48 @@ const Signup = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [cpassword, setCpassword] = useState("");
+  const [errors, setErrors] = useState("");
   const verified = 0;
   const token = "thisistoken93i493hele"
   const recieveEmail = 0
+
+  const validate = () => {
+	  let name = this.state.name;
+	  let username = this.state.username;
+	  let email = this.state.email;
+	  let password = this.state.password;
+	  let cpassword = this.state.cpassword;
+
+	  let isValid = true;
+	  let errors = {};
+
+	  if (!name){
+		isValid = false;
+		errors["name"] = "Please write your full name";
+	  }
+	  if (!username){
+		  isValid = false;
+		  errors["username"] = "Write your username";
+	  }
+	  if (!email){
+		  isValid = false;
+		  errors["email"] = "Write your email";
+	  }
+	  if (typeof email !== "undefined") {
+          
+        var pattern = new RegExp(/^(("[\w-\s]+")|([\w-]+(?:\.[\w-]+)*)|("[\w-\s]+")([\w-]+(?:\.[\w-]+)*))(@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$)|(@\[?((25[0-5]\.|2[0-4][0-9]\.|1[0-9]{2}\.|[0-9]{1,2}\.))((25[0-5]|2[0-4][0-9]|1[0-9]{2}|[0-9]{1,2})\.){2}(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[0-9]{1,2})\]?$)/i);
+        if (!pattern.test(email)) {
+          isValid = false;
+          errors["email"] = "Please enter valid email address.";
+        }
+      }
+	  if (!password || !cpassword){
+		  isValid = false;
+		  errors["password"] = "Type your desired password properly";
+	  }
+	  setErrors(errors);
+	  return (isValid);
+  }
 
   const onSubmitForm = async e => {
     e.preventDefault();
@@ -30,11 +69,20 @@ const Signup = () => {
       <h2 className="text-center mt-3">Signup Form</h2>
         <div className="row justify-content-center align-items-center">
             <form className="text-center mt-3 col-md-6 col-sm-6 col-lg-4 col-xs-8" onSubmit={onSubmitForm}>
-                <input className="form-control mt-3" type="text" value = {name} onChange={e => setName(e.target.value)} placeholder="Full Name" />
-                <input className="form-control mt-3" type="text" value = { username } onChange={e => setUsername(e.target.value)} placeholder="Username"/>
-                <input className="form-control mt-3" type="text" value = { email } onChange={e => setEmail(e.target.value)} placeholder="john@gmail.com"/>
-                <input className="form-control mt-3" type="password" value = { password } onChange={e => setPassword(e.target.value)} placeholder="Type password"/>
-                <input className="form-control mt-3" type="password" value = { cpassword } onChange={e => setCpassword(e.target.value)} placeholder="Confirm password"/>
+			<div className="form-group">
+				<input className="form-control mt-3" 
+					type="text"
+					name="fullname"
+					value = {name}
+					onChange={e => setName(e.target.value)}
+					placeholder="Full Name"
+				/>
+				<div className="text-danger">{errors}</div>
+			</div>
+                <input className="form-control mt-3" type="text" name="username" value = { username } onChange={e => setUsername(e.target.value)} placeholder="Username" required />
+                <input className="form-control mt-3" type="text" name="email" value = { email } onChange={e => setEmail(e.target.value)} placeholder="john@gmail.com" required/>
+                <input className="form-control mt-3" type="password" name="passwd" value = { password } onChange={e => setPassword(e.target.value)} placeholder="Type password" required />
+                <input className="form-control mt-3" type="password" name="cpasswd" value = { cpassword } onChange={e => setCpassword(e.target.value)} placeholder="Confirm password" required />
                 <button className="btn btn-success mt-3">Register</button>
             </form>
         </div>
