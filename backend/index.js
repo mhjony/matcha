@@ -2,14 +2,14 @@ const express = require('express');
 const app = express();
 const cors = require('cors');
 const pool = require('./db');
-const userRouter = require('./routes/users');
+const userRouter = require('./routes/signup');
 
 
 app.use(cors());
 app.use(express.json());
 
 //create users
-app.use('/users', userRouter);
+app.use('/signup', userRouter);
 
 
 app.listen(5000, () => {

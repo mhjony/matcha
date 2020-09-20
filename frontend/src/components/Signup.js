@@ -1,78 +1,107 @@
-import React, { Fragment, useState, useEffect, useRef } from "react";
+import React, { Fragment, useState, useRef, useEffect } from "react";
 
 const Signup = () => {
-  const [name, setName] = useState("");
-  const [username, setUsername] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [cpassword, setCpassword] = useState("");
-  //const [errors, setErrors] = useState("");
-  const verified = 0;
-  const token = "thisistoken93i493hele"
-  const recieveEmail = 0
+	const [name, setName] = useState("");
+	const [username, setUsername] = useState("");
+	const [email, setEmail] = useState("");
+	const [password, setPassword] = useState("");
+	const [cpassword, setCpassword] = useState("");
+	const verified = 0;
+	const token = "newtoken08989today"
+	const recieveEmail = 0
 
-  //new lines
-  const firstRender = useRef(true);
-  const [disable, setDisabled] = useState(true)
-  const [error, setError] = useState(null)
+	const firstRender = useRef(true);
+	const [disable, setDisable] = useState(true);
+	const [error, setError] = useState("");
 
-  useEffect(() => {
-	  if (firstRender.current){
-		  firstRender.current = false
-		  return
-	  }
-	  setDisabled(formValidation())
-  }, [name]) // eslint-disable-line react-hooks/exhaustive-deps
+	useEffect(() => {
+		if (firstRender.current){
+			firstRender.current = false;
+			return
+		}
+		setDisable(inputValidation());
+	}, [name]) // eslint-disable-line react-hooks/exhaustive-deps
 
-  const formValidation = () => {
-	if (name === "") {
-		setError('Name cant be blank!')
-		return true
-	} else {
-		setError(null)
-		return false
+	const inputValidation = () => {
+		if (name === ""){
+			setError("Name field cant be empty")
+			return true
+		}else {
+			setError(null);
+			return false;
+		}
 	}
-  }
 
-  const onSubmitForm = async e => {
-    e.preventDefault();
-    try {
-      const response = await fetch("http://localhost:5000/users", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-		body: JSON.stringify({name, username, email, verified, token, password, recieveEmail})
-      });
-	console.log(response);
-    window.location = "/";
-    } catch (err) {
-      console.error(err.message);
-    }
-  };
-
-  return (
-    <Fragment>
-      <h2 className="text-center mt-3">Signup Form</h2>
-        <div className="row justify-content-center align-items-center">
-            <form className="text-center mt-3 col-md-6 col-sm-6 col-lg-4 col-xs-8" onSubmit={onSubmitForm}>
-			<div className="form-group">
-				<input className="form-control mt-3" 
-					type="text"
-					name="name"
-					value = {name}
-					onChange={e => setName(e.target.value)}
-					placeholder="Full Name"
-				/>
-				{ error && <p>{error}</p> }
+	const submitForm = async e => {
+		e.preventDefault();
+		try {
+			const response = await fetch("http://localhost:5000/signup", {
+				method: "POST",
+				headers: {"content-type": "application/json"},
+				body: JSON.stringify({name, username, email, password, verified, token, recieveEmail})
+			})
+			console.log(response);
+			window.location = "/";
+		}catch(err){
+			console.error(err.message);
+		}
+	}
+	return (
+		<Fragment>
+			<h2 className="text-center mt-3">Signup Form</h2>
+			<div className="row justify-content-center align-items-center">
+				<form className="text-center mt-3 col-md-6 col-sm-6 col-lg-4 col-xs-8" onSubmit={submitForm}>
+					<div className="form-group">
+						<input className="form-control"
+							type="text" 
+							name="name"
+							value={name}
+							onChange={e => setName(e.target.value)} 
+							placeholder="Full Name" 
+						/>
+						{error}
+					</div>
+					<div className="form-group mt-3">
+						<input className="form-control"
+							type="text"
+							name="username" 
+							value={username}
+							onChange={e => setUsername(e.target.value)}
+							placeholder="Username" 
+						/>
+					</div>
+					<div className="form-group mt-3">
+						<input className="form-control"
+							type="text" 
+							name="email"
+							value={email}
+							onChange={e => setEmail(e.target.value)}
+							placeholder="Email"
+						/>
+					</div>
+					<div className="form-group mt-3">
+						<input className="form-control"
+							type="password"
+							name="password"
+							value={password}
+							onChange={e => setPassword(e.target.value)}
+							placeholder="Password"
+						/>
+					</div>
+					<div className="form-group mt-3">
+						<input className="form-control"
+							type="password"
+							name="cpassword"
+							value={cpassword}
+							onChange={e => setCpassword(e.target.value)}
+							placeholder="Confirm password"
+						/>
+					</div>
+					<button className="btn btn-success mt-3" disabled={disable} type="submit">Register</button>
+				</form>
 			</div>
-                <input className="form-control mt-3" type="text" name="username" value = { username } onChange={e => setUsername(e.target.value)} placeholder="Username" required />
-                <input className="form-control mt-3" type="text" name="email" value = { email } onChange={e => setEmail(e.target.value)} placeholder="john@gmail.com" required/>
-                <input className="form-control mt-3" type="password" name="passwd" value = { password } onChange={e => setPassword(e.target.value)} placeholder="Type password" required />
-                <input className="form-control mt-3" type="password" name="cpasswd" value = { cpassword } onChange={e => setCpassword(e.target.value)} placeholder="Confirm password" required />
-                <button className="btn btn-success mt-3" type="submit" disabled={disable}>Register</button>
-            </form>
-        </div>
-    </Fragment>
-  );
-};
+		</Fragment>
+	)
+}
 
 export default Signup;
