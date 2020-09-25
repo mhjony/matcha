@@ -1,3 +1,4 @@
+# ⚠️ CAUTION : THIS PROJECT IS UNDER CONSTRUCTION 
 # Instructions
 cd backend <br />
 npm i # Install server-side dependencies <br />
