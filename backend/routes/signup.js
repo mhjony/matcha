@@ -9,13 +9,20 @@ const { sendEmail } = require('./sendEmail')
 router.post("/", async(req, res) => {
   // LETS VALIDATE THE DATA BEFORE MAKE A USER and it comes from validation.js file
     const { error } = registerValidation(req.body);
-    if (error) return res.status(400).send(error.details[0].message);
-  // If the user already exists
-  pool.query("select email from users where email='"+req.body.email+"'", function(err, data){
-    if(data.rows && data.rows.length > 0){
-      return res.status(400).send("This email already exists");
+    if (error) return res.status(400).json({msessage: error.details[0].message});
+
+  // If the email already exists
+  const emailExist = await pool.query("SELECT email FROM users WHERE email= $1", [req.body.email])
+    if (emailExist.rows.length > 0) {
+      return res.status(400).json({message: "This email already exists"});
     }
-  })
+
+  // If the username already exists
+  const usernameExist = await pool.query("SELECT username FROM users WHERE username= $1", [req.body.username])
+    if (usernameExist.rows.length > 0) {
+      return res.status(400).json({message: "This email already exists"});
+    }
+
   // Hash password
   const salt = await bcrypt.genSalt(10);
   const hashedPassword = await bcrypt.hash(req.body.password, salt);
@@ -27,7 +34,7 @@ router.post("/", async(req, res) => {
 
       const { error } = sendEmail(req.body.email);
       if (!error){
-        return res.status(400).send("Email could not be sent");
+        return res.status(400).json({message: "Email could not be sent"});
       }
       res.json(newUser.rows);
   }catch(err){
