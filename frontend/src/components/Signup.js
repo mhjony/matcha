@@ -12,11 +12,12 @@ const Signup = () => {
 	const [gender, setGender] = useState('');
 	const [date, setDate] = useState(new Date());
 	const verified = 0;
-	const recieveEmail = 0
+	const recieveEmail = "0"
 
 	const firstRender = useRef(true);
 	const [disable, setDisable] = useState(true);
 	const [error, setError] = useState("");
+	const [loginStatus, setLoginStatus] = useState("");
 	const today = new Date();
 
 	// generating token
@@ -74,7 +75,7 @@ const Signup = () => {
 					body: JSON.stringify({name, username, email, password, verified, token, recieveEmail, gender})
 				})
 				console.log(response);
-				window.location = "/";
+				//window.location = "/";
 			}catch(err){
 				console.error(err.message);
 			}

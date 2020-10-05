@@ -14,13 +14,14 @@ router.post("/", async(req, res) => {
   // If the email already exists
   const emailExist = await pool.query("SELECT email FROM users WHERE email= $1", [req.body.email])
     if (emailExist.rows.length > 0) {
-      return res.status(400).json({message: "This email already exists"});
+      // return res.status(400).json({message: "This email already exists"});
+      res.send({ message: "This email already exists" });
     }
 
   // If the username already exists
   const usernameExist = await pool.query("SELECT username FROM users WHERE username= $1", [req.body.username])
     if (usernameExist.rows.length > 0) {
-      return res.status(400).json({message: "This email already exists"});
+      return res.status(400).json({message: "This username already exists"});
     }
 
   // Hash password
@@ -33,7 +34,7 @@ router.post("/", async(req, res) => {
       [name, username, email, verified, token, hashedPassword, recieveEmail, gender]);
 
       const { error } = sendEmail(req.body.email);
-      if (!error){
+      if (error){
         return res.status(400).json({message: "Email could not be sent"});
       }
       res.json(newUser.rows);
