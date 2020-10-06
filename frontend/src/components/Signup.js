@@ -1,29 +1,33 @@
 import React, { Fragment, useState, useRef, useEffect } from "react";
-import DatePicker from 'react-datepicker';
+import axios from 'axios';
+import FlashMessage from 'react-flash-message';
+import Alert from 'react-bootstrap/Alert';
+import "./css/Signup.css";
 
-import "react-datepicker/dist/react-datepicker.css";
+//import DatePicker from 'react-datepicker';
+//import "react-datepicker/dist/react-datepicker.css";
 
 const Signup = () => {
-	const [name, setName] = useState("");
+	const [firstName, setFirstName] = useState("");
+	const [lastName, setLastName] = useState("");
 	const [username, setUsername] = useState("");
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
 	const [cpassword, setCpassword] = useState("");
 	const [gender, setGender] = useState('');
 	const [date, setDate] = useState(new Date());
-	const verified = 0;
-	const recieveEmail = "0"
-
-	const firstRender = useRef(true);
 	const [disable, setDisable] = useState(true);
 	const [error, setError] = useState("");
-	const [loginStatus, setLoginStatus] = useState("");
+	const [signupStatus, setSignupStatus] = useState("");
+	
+	const verified = 0;
 	const today = new Date();
+	const firstRender = useRef(true);
 
 	// generating token
-	const rand = () =>Math.random(0).toString(36).substr(2);
+	const rand = () => Math.random(0).toString(36).substr(2);
 	const token_check = (length) =>(rand()+rand()+rand()+rand()).substr(0,length);
-	const token = token_check(40);
+	const token = token_check(100);
 
 	useEffect(() => {
 		if (firstRender.current){
@@ -31,31 +35,13 @@ const Signup = () => {
 			return
 		}
 		setDisable(inputValidation());
-	}, [name, username, email, password]) // eslint-disable-line react-hooks/exhaustive-deps
+	}, [firstName, lastName, username, email, password]) // eslint-disable-line react-hooks/exhaustive-deps
 
 	const inputValidation = () => {
-		if (name === "" || username === "" || email === "" || password === "")
+		if (lastName === "" || firstName === "" || username === "" || email === "" || password === "")
 		{
-			if (name === ""){
-				setError("Name field cant be empty")
-				return true
-			}
-			if (username === ""){
-				setError("Username field cant be empty")
-				return true
-			}
-			if (email === ""){
-				setError("Email field cant be empty")
-				return true
-			}
-			if (password === ""){
-				setError("Password field cant be empty")
-				return true
-			}
-			if (gender === "select"){
-				setError("Select your gender")
-				return true
-			}
+			setError("All fields should be filled!")
+			return true;
 		}
 		else {
 			setError(null);
@@ -65,19 +51,20 @@ const Signup = () => {
 
 	const submitForm = async e => {
 		e.preventDefault();
-		//console.log(gender);
+
 		if (!inputValidation())
 		{
-			try {
-				const response = await fetch("http://localhost:5000/signup", {
-					method: "POST",
-					headers: {"content-type": "application/json"},
-					body: JSON.stringify({name, username, email, password, verified, token, recieveEmail, gender})
+			if (password === cpassword)
+			{
+				axios.post(`http://localhost:5000/signup`, { firstName, lastName, username, email, password, verified, token, gender })
+				.then(response => {
+					if (response.data.message) {
+						setSignupStatus(response.data.message);
+					}
 				})
-				console.log(response);
-				//window.location = "/";
-			}catch(err){
-				console.error(err.message);
+			}
+			else {
+				return setSignupStatus("Password and cofirm password mismatch");
 			}
 		}
 		else{
@@ -86,17 +73,36 @@ const Signup = () => {
 	}
 	return (
 		<Fragment>
+			{ signupStatus && 
+				<FlashMessage duration={5000}>
+					<Alert variant="info">
+						<span className="close"><strong >X</strong></span>
+						<strong>{signupStatus}</strong>
+					</Alert>
+				</FlashMessage>
+			}
 			<h2 className="text-center mt-3">Signup Form</h2>
 			<div className="row justify-content-center align-items-center">
 				<form className="text-center mt-3 col-md-6 col-sm-6 col-lg-4 col-xs-8" onSubmit={submitForm}>
-					<div className="form-group">
-						<input className="form-control"
-							type="text" 
-							name="name"
-							value={name}
-							onChange={e => setName(e.target.value)} 
-							placeholder="Full Name" 
-						/>
+					<div className="form-group form-horizontal">
+						<div className="form-group" id="firstName">
+							<input className="form-control"
+								type="text" 
+								name="firstName"
+								value={firstName}
+								onChange={e => setFirstName(e.target.value)} 
+								placeholder="First Name" 
+							/>
+						</div>
+						<div className="form-group" id="lastName">
+							<input className="form-control"
+								type="text" 
+								name="lastName"
+								value={lastName}
+								onChange={e => setLastName(e.target.value)} 
+								placeholder="Last Name" 
+							/>
+						</div>
 					</div>
 					<div className="form-group mt-3">
 						<input className="form-control"
@@ -142,6 +148,7 @@ const Signup = () => {
 							<option value="others">Others</option>
 						</select>
 					</div>
+					{/*
 					<div className="form-group mt-3">
 						<DatePicker className="form-control"
 							selected={date}
@@ -150,7 +157,7 @@ const Signup = () => {
 							maxDate={today}
 							dateFormat="dd/MM/yyyy"
 						/>
-					</div>
+					</div>*/}
 					
 					<button className="btn btn-success mt-3" disabled={disable} type="submit">Register</button>
 				</form>

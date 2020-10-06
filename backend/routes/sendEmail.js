@@ -1,6 +1,6 @@
 var nodemailer = require('nodemailer');
 
-const sendEmail = email => {
+const sendEmail = (email, token) => {
     var transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
@@ -13,7 +13,7 @@ const sendEmail = email => {
     from: 'testing.matcha@gmail.com',
     to: email,
     subject: 'Sending Email using Node.js',
-    text: 'That was easy!'
+    text: `Hello! Please click the following link to verify your email http://localhost:5000/verify?token=${token}`
     };
 
     transporter.sendMail(mailOptions, function(error, info){
