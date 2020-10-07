@@ -3,8 +3,9 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const router = express.Router();
 const pool = require('../db');
+const dotenv = require("dotenv").config();
 
-router.get('/', async (request, response) => {
+router.post('/', async (request, response) => {
     const body = request.body;
     const user = await pool.query("SELECT * FROM users WHERE username= $1", [body.username])
     const hashedPass = user.rows[0].password;;
@@ -16,8 +17,11 @@ router.get('/', async (request, response) => {
     }
     const userForToken = {
         username: user.rows[0].username,
-        id: user.rows[0]._id,
+        id: user.rows[0].user_id,
     }
+    //const token = jwt.sign({id: user.rows[0].id}, process.env.TOKEN_SECRET)
+    const token = jwt.sign(userForToken, process.env.TOKEN_SECRET)
+    response.header('auth-token', token).send(token);
 })
 
 module.exports = router;
