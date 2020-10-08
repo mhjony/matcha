@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-//import axios from 'axios';
 import login from './services/loginService';
 import FlashMessage from 'react-flash-message';
 import Alert from 'react-bootstrap/Alert';
@@ -37,6 +36,7 @@ const Login = () => {
 					</Alert>
 				</FlashMessage>
             }
+            <h2 className="text-center mt-3">Login</h2>
             <div className="row justify-content-center align-items-center">
                 <form className="text-center mt-3 col-md-6 col-sm-6 col-lg-4 col-xs-8" onSubmit={handleLogin}>
                     <div className="form-group mt-3">
@@ -58,8 +58,14 @@ const Login = () => {
                         />
                     </div>
                     <button className="btn btn-success mt-3" type="submit">Login</button>
+                    <div className="form-group mt-3">
+                        {user !== null &&
+                            <div>
+                                <p><b>{user.username}</b> logged-in and id is: {user.id}</p>
+                            </div>
+                        }
+                    </div>
                 </form>
-                {user === null && <h1>Loggedkkk</h1>}
             </div>
        </>
    )
