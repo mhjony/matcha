@@ -7,6 +7,9 @@ const emailVerifyRouter = require('./routes/emailVerification');
 const loginRouter = require('./routes/login');
 const userHomeRouter = require('./routes/userHome');
 
+const bodyParser = require('body-parser')
+const jsonParser = bodyParser.json()
+
 app.use(cors());
 app.use(express.json());
 

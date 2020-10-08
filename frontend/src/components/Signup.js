@@ -15,13 +15,13 @@ const Signup = () => {
 	const [password, setPassword] = useState("");
 	const [cpassword, setCpassword] = useState("");
 	const [gender, setGender] = useState('');
-	const [date, setDate] = useState(new Date());
+	//const [date, setDate] = useState(new Date());
 	const [disable, setDisable] = useState(true);
 	const [error, setError] = useState("");
 	const [signupStatus, setSignupStatus] = useState("");
 	
 	const verified = 0;
-	const today = new Date();
+	//const today = new Date();
 	const firstRender = useRef(true);
 
 	// generating token
@@ -60,6 +60,13 @@ const Signup = () => {
 				.then(response => {
 					if (response.data.message) {
 						setSignupStatus(response.data.message);
+						setFirstName('');
+						setLastName('');
+						setUsername('');
+						setEmail('');
+						setPassword('');
+						setCpassword('');
+						setGender('');
 					}
 				})
 			}
