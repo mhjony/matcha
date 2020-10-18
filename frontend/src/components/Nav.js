@@ -1,6 +1,4 @@
 import React from 'react';
-import Alert from 'react-bootstrap/Alert';
-import Navbar from 'react-bootstrap/Navbar';
 import './css/Nav.css';
 
 const Nav = () => {
@@ -15,10 +13,10 @@ const Nav = () => {
     return (
         <div>
             <div class="topnav" id="myTopnav">
-                <a href="" class="active">Matcha</a>
+                <a href="# " class="active">Matcha</a>
                 <a href="/login">Log in</a>
                 <a href="/signup">Sign up</a> 
-                <a href="javascript:void(0);" class="icon" onclick="navFunction()">
+                <a href="javascript:void(0);" class="icon" onclick={navFunction}>
                     <i class="fa fa-bars"></i>
                 </a>
             </div>
