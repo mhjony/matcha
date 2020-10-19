@@ -1,0 +1,12 @@
+PUT http://localhost:3001/users/1
+Content-Type: application/json
+
+{
+	"name": "ville",
+	"username": "kalle",
+	"email": "ulla@ulla",
+	"password": "kukka",
+	"gender": "male",
+	"orientation": "m",
+	"tags": "#hot#hip"
+}

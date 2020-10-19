@@ -1,24 +1,26 @@
-const express = require('express');
-const app = express();
-const cors = require('cors');
-const pool = require('./db');
-const userRouter = require('./routes/signup');
-const emailVerifyRouter = require('./routes/emailVerification');
-const loginRouter = require('./routes/login');
-const userHomeRouter = require('./routes/userHome');
+const express = require('express')
+const cors = require('cors')
+const app = express()
+const config = require('./utils/config')
+const usersRouter = require('./routers/users')
+const tagsRouter = require('./routers/tags')
+const loginRouter = require('./routers/login')
+const middleware = require('./utils/middleware')
+const verifyRouter = require('./routers/verify')
+const resetRouter = require('./routers/reset')
 
-const bodyParser = require('body-parser')
-const jsonParser = bodyParser.json()
+app.use(express.json())
+app.use(cors())
+app.use(middleware.requestLogger)
 
-app.use(cors());
-app.use(express.json());
+app.use('/users', usersRouter)
+app.use('/tags', tagsRouter)
+app.use('/login', loginRouter)
+app.use('/verify', verifyRouter)
+app.use('/reset-password', resetRouter)
 
-//create users
-app.use('/signup', userRouter);
-app.use('/verify', emailVerifyRouter);
-app.use('/login', loginRouter);
-app.use('/posts', userHomeRouter);
+app.use(middleware.unknownEndpoint)
 
-app.listen(5000, () => {
-	console.log("server started on port 5000");
+app.listen(config.PORT, () => {
+	console.log(`App running on port ${config.PORT}.`)
 })

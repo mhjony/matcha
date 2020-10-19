@@ -1,0 +1,30 @@
+CREATE DATABASE matcha;
+
+CREATE TYPE gender AS ENUM ('female', 'male', 'other');
+
+CREATE TYPE orientation AS ENUM ('f', 'm', 'o', 'fm', 'fo', 'mo', 'fmo');
+
+CREATE TABLE users (
+	user_id SERIAL PRIMARY KEY,
+	first_name VARCHAR(50) NOT NULL,
+	last_name VARCHAR(50) NOT NULL,
+	username VARCHAR(50) NOT NULL UNIQUE,
+	email VARCHAR(255) NOT NULL UNIQUE,
+	verified SMALLINT NOT NULL DEFAULT '0',
+	token varchar(255) DEFAULT NULL,
+	password VARCHAR(255) NOT NULL,
+	gender gender,
+	orientation orientation,
+	bio VARCHAR(1000),
+	tags VARCHAR(255)
+);
+
+CREATE TABLE tags (
+	tag VARCHAR(50) PRIMARY KEY
+);
+
+INSERT INTO users (first_name, last_name, username, email, password)
+	VALUES ('kalle', 'laitela', 'kalle', 'kalle@kalle.fi', 'kalle') RETURNING *;
+
+INSERT INTO users (name, username, email, password, gender, orientation)
+	VALUES ($1, $2, $3, $4, $5, $6) RETURNING *
