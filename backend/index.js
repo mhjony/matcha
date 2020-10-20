@@ -17,7 +17,7 @@ app.use('/users', usersRouter)
 app.use('/tags', tagsRouter)
 app.use('/login', loginRouter)
 app.use('/verify', verifyRouter)
-app.use('/reset-password', resetRouter)
+app.use('/reset', resetRouter)
 
 app.use(middleware.unknownEndpoint)
 
