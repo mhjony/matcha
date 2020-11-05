@@ -23,6 +23,17 @@ CREATE TABLE tags (
 	tag VARCHAR(50) PRIMARY KEY
 );
 
+CREATE TABLE photos (
+	id SERIAL PRIMARY KEY,
+	user_id INT NOT NULL,
+	profile_pic SMALLINT NOT NULL DEFAULT '0',
+	photo_str VARCHAR(500000) NOT NULL
+);
+
+SELECT * FROM photos
+INNER JOIN users ON users.user_id = photos.user_id
+WHERE photos.user_id=2;
+
 INSERT INTO users (first_name, last_name, username, email, password)
 	VALUES ('kalle', 'laitela', 'kalle', 'kalle@kalle.fi', 'kalle') RETURNING *;
 

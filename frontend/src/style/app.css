@@ -5,7 +5,11 @@
 .nav {
 	margin-bottom: 1em;
 	padding-bottom: 0.5em;
-	border-bottom: 0.1em solid black;
+}
+
+.navRight {
+	position: absolute;
+	right: 0em;
 }
 
 footer {

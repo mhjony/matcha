@@ -1,12 +1,10 @@
 const usersRouter = require('express').Router()
 const db = require('../utils/db')
-const bcrypt = require('bcryptjs');
-const nodemailer = require('nodemailer');
-
-//const { registerValidation } = require('../utils/validation')
+const bcrypt = require('bcryptjs')
+const nodemailer = require('nodemailer')
 
 usersRouter.get('/', (req, resp) => {
-	db.query('SELECT * FROM users', [], (err, res) => {
+	db.query('SELECT username, user_id FROM users', [], (err, res) => {
 		if (err)
 			resp.status(500).send(err)
 		else
@@ -15,9 +13,12 @@ usersRouter.get('/', (req, resp) => {
 })
 
 usersRouter.get('/:id', (req, resp) => {
-	db.query('SELECT * FROM users WHERE user_id = $1', [req.params.id], (err, res) => {
-		if (res && res.rows[0])
-			resp.status(200).send(res.rows[0])
+
+	db.query('SELECT * FROM users \
+	LEFT OUTER JOIN photos USING (user_id) \
+	WHERE users.user_id = $1', [req.params.id], (err, res) => {
+		if (res && res.rows)
+			resp.status(200).send(res.rows)
 		else if (res)
 			resp.status(500).send({ error: 'User not found' })
 		else
@@ -35,7 +36,7 @@ usersRouter.post('/', async (req, resp) => {
 				pass: 'matcha1234'
 			}
 		});
-	
+
 		//could add user_id to the verify address
 		const mailOptions = {
 			from: 'testing.matcha@gmail.com',
@@ -43,7 +44,7 @@ usersRouter.post('/', async (req, resp) => {
 			subject: 'Sending Email using Node.js',
 			text: `Hello! Please click the following link to verify your email http://localhost:3001/verify?token=${token}`
 		};
-	
+
 		transporter.sendMail(mailOptions, function (error, info) {
 			if (error) {
 				console.log(error);
@@ -60,8 +61,7 @@ usersRouter.post('/', async (req, resp) => {
 	const { firstName, lastName, username, email, token } = req.body;
 
 	// Hash password	
-	const saltRounds = 10
-	const hashedPassword = await bcrypt.hash(req.body.password, saltRounds)
+	const hashedPassword = await bcrypt.hash(req.body.password, 10)
 
 	// Add user
 	db.query('INSERT INTO users (first_name, last_name, username, email, password, token) \
@@ -82,26 +82,52 @@ usersRouter.post('/', async (req, resp) => {
 	sendEmail(email, token)
 })
 
-usersRouter.put('/:id', (req, resp) => {
+usersRouter.put('/:id', async (req, resp) => {
 	const { firstName, lastName, username, email, gender, orientation, tags, bio } = req.body
-	db.query('UPDATE users \
-		SET (first_name, last_name, username, email, gender, orientation, tags, bio) \
-		= ($1, $2, $3, $4, $5, $6, $7, $8) \
-		WHERE user_id = $9 RETURNING *',
-		[firstName, lastName, username, email, gender, orientation, tags, bio, req.params.id],
-		(err, res) => {
 
-			if (res && res.rows[0])
-				resp.status(200).send(res.rows[0])
-			else if (res)
-				resp.status(500).send({ error: 'User not found' })
-			else if (err.detail && err.detail.startsWith('Key (email)'))
-				resp.status(409).send({ error: 'email already exists' })
-			else if (err.detail && err.detail.startsWith('Key (username)'))
-				resp.status(409).send({ error: 'username already exists' })
-			else
-				resp.status(500).send(err)
-		})
+
+	if (req.body.password) {
+		const hashedPassword = await bcrypt.hash(req.body.password, 10)
+		db.query('UPDATE users \
+			SET (first_name, last_name, username, email, gender, orientation, tags, bio, password) \
+			= ($1, $2, $3, $4, $5, $6, $7, $8, $9) \
+			WHERE user_id = $10 RETURNING *',
+			[firstName, lastName, username, email, gender, orientation, tags, bio, hashedPassword, req.params.id],
+			(err, res) => {
+
+				if (res && res.rows[0])
+					resp.status(200).send(res.rows[0])
+				else if (res)
+					resp.status(500).send({ error: 'User not found' })
+				else if (err.detail && err.detail.startsWith('Key (email)'))
+					resp.status(409).send({ error: 'email already exists' })
+				else if (err.detail && err.detail.startsWith('Key (username)'))
+					resp.status(409).send({ error: 'username already exists' })
+				else
+					resp.status(500).send(err)
+			})
+
+	} else {
+
+		db.query('UPDATE users \
+			SET (first_name, last_name, username, email, gender, orientation, tags, bio) \
+			= ($1, $2, $3, $4, $5, $6, $7, $8) \
+			WHERE user_id = $9 RETURNING *',
+			[firstName, lastName, username, email, gender, orientation, tags, bio, req.params.id],
+			(err, res) => {
+
+				if (res && res.rows[0])
+					resp.status(200).send(res.rows[0])
+				else if (res)
+					resp.status(500).send({ error: 'User not found' })
+				else if (err.detail && err.detail.startsWith('Key (email)'))
+					resp.status(409).send({ error: 'email already exists' })
+				else if (err.detail && err.detail.startsWith('Key (username)'))
+					resp.status(409).send({ error: 'username already exists' })
+				else
+					resp.status(500).send(err)
+			})
+	}
 })
 
 usersRouter.delete('/:id', (req, resp) => {

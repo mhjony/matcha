@@ -15,7 +15,7 @@ const resetEmail = (email, token) => {
 		from: 'testing.matcha@gmail.com',
 		to: email,
 		subject: 'Reset your password',
-		text: `Hello! Please click the following link to verify your email http://localhost:3001/reset?token=${token}`
+		text: `Hello! Please click the following link to reset your password http://localhost:3000/reset-password/${token}`
 	};
 
 	transporter.sendMail(mailOptions, function (error, info) {

@@ -1,1 +1,1 @@
-DELETE http://localhost:3001/users/7
+DELETE http://localhost:3001/users/23

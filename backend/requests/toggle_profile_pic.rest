@@ -1,0 +1,6 @@
+PUT http://localhost:3001/photos/1
+Content-Type: application/json
+
+{
+    "profilePic": 0
+}

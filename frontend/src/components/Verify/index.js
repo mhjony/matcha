@@ -4,7 +4,7 @@ import Login from '../Login';
 const Verify = ({ setUser }) => {
 
 	return <>
-			<h3 className="text-center mt-3">Account verified</h3>
+			<p className="text-center text-success">account verified</p>
 			<Login setUser={setUser} />
 		</>
 }
