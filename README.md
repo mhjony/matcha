@@ -1,16 +1,16 @@
 # Matcha
 
-Dating app<br />
+Dating app like Tinder<br />
 React+Node.js+Postgres<br/>
 Hive Helsinki school project
 
-Demo
----
-- [Demo in Heroku](https://matchademo.herokuapp.com)
-- [Demo project depository](https://github.com/lapaset/matcha_demo)
 
 Features
 ---
+- Registration
+  - User signup
+  - Login
+  - Email Verification
 - user browser
   - filter and sort interesting users by distance, age, common tags and fame
   - see users that like you
@@ -27,4 +27,4 @@ Features
   - see visit history
   - see and unblock blocked users
 - chat with connected users
-- notifications
+- Real time notifications
