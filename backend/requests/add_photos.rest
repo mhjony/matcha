@@ -1,8 +1,0 @@
-POST http://localhost:3001/photos
-Content-Type: application/json
-
-{
-	"user_id": 2,
-	"profilePic": "0",
-	"photoStr": "thisisphotostr"
-}

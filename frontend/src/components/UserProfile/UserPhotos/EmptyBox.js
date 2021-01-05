@@ -11,9 +11,9 @@ const EmptyBox = ({ user, setUser }) => {
 	const closeModal = () => setShowModal(false)
 
 	const buttonStyle = {
-		position: "absolute",
-		bottom: "5px",
-		right: "5px"
+		position: 'absolute',
+		bottom: '5px',
+		right: '5px'
 	}
 
 	return <ResponsiveEmbed aspectRatio="1by1">

@@ -25,11 +25,11 @@ const ProfilePicButton = ({ photo, profilePic, user, setUser }) => {
 						setUser(updatedUser)
 					})
 					.catch(e => {
-						console.log('error at toggle profile pic', e);
+						console.log('Database error', e)
 					})
 			})
 			.catch(e => {
-				console.log('error at toggle profile pic', e);
+				console.log('Database error', e)
 			})
 	}
 

@@ -29,6 +29,10 @@ const DeletePhotoButton = ({ photo, user, setUser }) => {
 								}
 								setUser(updatedUser)
 							})
+							.catch(e => {
+								console.log('Database error', e)
+							})
+
 					} else {
 						const updatedUser = {
 							...user,
@@ -45,7 +49,7 @@ const DeletePhotoButton = ({ photo, user, setUser }) => {
 				}
 			})
 			.catch(e => {
-				console.log('error at delete photo', e)
+				console.log('Database error', e)
 			})
 	}
 

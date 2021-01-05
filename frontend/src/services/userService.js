@@ -1,4 +1,5 @@
 import axios from 'axios'
+import auth from '../utils/auth'
 const baseUrl = 'http://localhost:3001/users'
 
 const orientationFromDb = orientation => {
@@ -15,46 +16,61 @@ const orientationFromDb = orientation => {
 	return o
 }
 
-const responseDataToApp = data => {
+const getAll = async () => {
+	const resp = await axios.get(baseUrl, auth.config())
 
-	const { first_name, last_name, id, profile_pic, photo_str, orientation, ...user } = data[0]
+	return resp.data.map(u => ({
+		...u,
+		orientation: orientationFromDb(u.orientation)
+	}))
+}
 
-	if (data[0].id && data[0].profile_pic !== undefined && data[0].photo_str) {
+const getUser = async userId => {
+	if (!userId)
+		return
 
-		user.photos = data.map(r => {
+	const resp = await axios.get(`${baseUrl}/${userId}`, auth.config())
+
+	if (!resp.data[0])
+		return resp.data
+
+	// eslint-disable-next-line no-unused-vars
+	const { first_name, last_name, id, profile_pic, photo_str, orientation, ...user } = resp.data[0]
+
+	if (resp.data[0].id && resp.data[0].profile_pic !== undefined && resp.data[0].photo_str) {
+
+		user.photos = resp.data.map(r => {
 			return ({ id: r.id, photoStr: r.photo_str, profilePic: r.profile_pic })
 		})
 	}
-	
+
 	return ({
 		...user,
 		firstName: first_name,
 		lastName: last_name,
-		orientation: orientationFromDb(orientation)
+		orientation: orientationFromDb(orientation),
+		age: resp.data[0].age.years
 	})
-}
-
-const getAll = async () => {
-	const resp = await axios.get(baseUrl)
-	return resp.data
-}
-
-const getUser = async id => {
-	const resp = await axios.get(`${baseUrl}/${id}`)
-	return responseDataToApp(resp.data)
 }
 
 const updateUser = async (userObject, id) => {
-	const resp = await axios.put(`${baseUrl}/${id}`, userObject)
 
-	const { first_name, last_name, orientation, ...user } = resp.data
+	const resp = await axios.patch(`${baseUrl}/${id}`, userObject, auth.config())
 
-	return ({
-		...user,
-		firstName: first_name,
-		lastName: last_name,
-		orientation: orientationFromDb(orientation)
-	})
+	if (resp.data.first_name) {
+		let { first_name, ...userObject } = resp.data
+		userObject.firstName = first_name
+	}
+
+	if (resp.data.last_name) {
+		let { last_name, ...userObject } = resp.data
+		userObject.lastName = last_name
+	}
+
+	if (resp.data.orientation)
+		userObject.orientation = orientationFromDb(resp.data.orientation)
+
+	return userObject
 }
 
 const createUser = async userObject => {
@@ -62,4 +78,11 @@ const createUser = async userObject => {
 	return resp.data
 }
 
-export default { getAll, getUser, updateUser, createUser }
+const getByGenderOrientation = async (gender, orientation) => {
+	const genderStr = gender.map(o => o.substring(0,1)).join('')
+	const resp = await axios
+		.get(`${baseUrl}?gender=${genderStr}&orientation=${orientation.substring(0,1)}`, auth.config())
+	return resp.data
+}
+
+export default { getAll, getUser, updateUser, createUser, getByGenderOrientation }

@@ -1,152 +1,87 @@
-import React, { Fragment, useState, useRef, useEffect } from "react";
-//import FlashMessage from 'react-flash-message';
-//import Alert from 'react-bootstrap/Alert';
-import '../../style/signup.css';
+import React, { useState } from 'react'
+import { useForm } from 'react-hook-form'
+import { Form, Col, Button } from 'react-bootstrap'
+import '../../style/signup.css'
 import userService from '../../services/userService'
+import PasswordFields from '../UI/Forms/PasswordFields'
+import RequiredInputField from '../UI/Forms/RequiredInputField'
+import BirthdateField from './BirthdateField'
 
 const Signup = () => {
-	const [firstName, setFirstName] = useState("");
-	const [lastName, setLastName] = useState("");
-	const [username, setUsername] = useState("");
-	const [email, setEmail] = useState("");
-	const [password, setPassword] = useState("");
-	const [cpassword, setCpassword] = useState("");
-	const [disable, setDisable] = useState(true);
-	const [error, setError] = useState("");
-	const [signupStatus, setSignupStatus] = useState("");
-	
-	const firstRender = useRef(true);
+	const { register, handleSubmit, errors, watch } = useForm()
+	const [errorMessage, setErrorMessage] = useState('')
+	const [notification, setNotification] = useState('')
 
-	// generating token
-	const rand = () => Math.random(0).toString(36).substr(2);
-	const token_check = (length) =>(rand()+rand()+rand()+rand()).substr(0,length);
-	const token = token_check(100);
+	const onSubmit = (data, e) => {
 
-	useEffect(() => {
-		if (firstRender.current){
-			firstRender.current = false;
-			return
-		}
-		setDisable(!inputValidation());
-	}, [firstName, lastName, username, email, password]) // eslint-disable-line react-hooks/exhaustive-deps
+		const rand = () => Math.random(0).toString(36).substr(2)
+		const token_check = (length) => (rand() + rand() + rand() + rand()).substr(0, length)
+		const token = token_check(100)
 
-	const inputValidation = () => {
-		if (lastName === "" || firstName === "" || username === "" || email === "" || password === "")
-		{
-			setError("All fields should be filled!")
-			return false;
-		}
-		else
-			return true;
-	}
-
-	const submitForm = async e => {
-		e.preventDefault();
-
-		if (!inputValidation()) {
-			alert({error})
-			return
+		const userObject = {
+			...data,
+			token,
+			birthdate: `${data.birthdate.year}-${data.birthdate.month}-${data.birthdate.day}`
 		}
 
-		if (password === cpassword)
-		{
-			const userObject = {
-				firstName,
-				lastName,
-				username,
-				email,
-				password,
-				token
-			}
-
-			userService
-				.createUser(userObject)
-				.then(data => {
-					console.log('user added', data)
-				})
-				.catch(e => {
-					setSignupStatus(e.response.data.error)
-				})
-		}
-		else
-			return setSignupStatus("Password and cofirm password mismatch")
-			
+		userService
+			.createUser(userObject)
+			.then(() => {
+				if (errorMessage)
+					setErrorMessage('')
+				setNotification('signup succesfull, check your email')
+				e.target.reset()
+			})
+			.catch(e => {
+				if (e.response && e.response.data)
+					setErrorMessage(e.response.data.error)
+				else
+					console.log('Database error', e)
+			})
 	}
 	return (
-		<Fragment>
-			{ signupStatus && 
-				<div><strong>{signupStatus}</strong></div>
-				/*<FlashMessage duration={5000}>
-					<Alert variant="info">
-						<span className="close"><strong >X</strong></span>
-						<strong>{signupStatus}</strong>
-					</Alert>
-				</FlashMessage>*/
-			}
+		<>
 			<h2 className="text-center mt-3">Signup Form</h2>
-			<div className="row justify-content-center align-items-center">
-				<form className="text-center mt-3 col-md-6 col-sm-6 col-lg-4 col-xs-8" onSubmit={submitForm}>
-					<div className="form-group form-horizontal">
-						<div className="form-group" id="firstName">
-							<input className="form-control"
-								type="text" 
-								name="firstName"
-								value={firstName}
-								onChange={e => setFirstName(e.target.value)} 
-								placeholder="First Name" 
-							/>
-						</div>
-						<div className="form-group" id="lastName">
-							<input className="form-control"
-								type="text" 
-								name="lastName"
-								value={lastName}
-								onChange={e => setLastName(e.target.value)} 
-								placeholder="Last Name" 
-							/>
-						</div>
-					</div>
-					<div className="form-group mt-3">
-						<input className="form-control"
-							type="text"
-							name="username" 
-							value={username}
-							onChange={e => setUsername(e.target.value)}
-							placeholder="Username" 
-						/>
-					</div>
-					<div className="form-group mt-3">
-						<input className="form-control"
-							type="text" 
-							name="email"
-							value={email}
-							onChange={e => setEmail(e.target.value)}
-							placeholder="Email"
-						/>
-					</div>
-					<div className="form-group mt-3">
-						<input className="form-control"
-							type="password"
-							name="password"
-							value={password}
-							onChange={e => setPassword(e.target.value)}
-							placeholder="Password"
-						/>
-					</div>
-					<div className="form-group mt-3">
-						<input className="form-control"
-							type="password"
-							name="cpassword"
-							value={cpassword}
-							onChange={e => setCpassword(e.target.value)}
-							placeholder="Confirm password"
-						/>
-					</div>					
-					<button className="btn btn-success mt-3" disabled={disable} type="submit">Register</button>
-				</form>
-			</div>
-		</Fragment>
+			<Form onSubmit={handleSubmit(onSubmit)}>
+
+				{errorMessage && <div className="text-center text-danger" >{errorMessage}</div>}
+				{notification && <div className="text-center text-success" >{notification}</div>}
+
+				<Form.Row>
+					<Col>
+						<RequiredInputField label='first name' errors={errors.firstName}
+							name='firstName' defVal='' maxLen='50'
+							register={register} />
+					</Col>
+					<Col>
+						<RequiredInputField label='last name' errors={errors.lastName}
+							name='lastName' defVal='' maxLen='50'
+							register={register} />
+					</Col>
+				</Form.Row>
+
+				<RequiredInputField label='username' errors={errors.username}
+					name='username' defVal='' maxLen='255'
+					register={register} />
+
+				<BirthdateField register={register} errors={errors.birthdate} watch={watch} />
+
+				<RequiredInputField label='email' errors={errors.email}
+					name='email' defVal='' maxLen='255'
+					register={register} requirements={{
+						pattern: {
+							value: /^[a-zA-Z0-9.!#$%&'*+/=?^_`{ | }~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/,
+							message: 'not a valid email'
+						}
+					}} />
+
+				<PasswordFields watch={watch} register={register} errors={errors}
+					required={true} />
+
+				<Button className="btn-success mt-3" type="submit">Register</Button>
+			</Form>
+		</>
 	)
 }
 
-export default Signup;
+export default Signup

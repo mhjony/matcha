@@ -1,6 +1,0 @@
-PUT http://localhost:3001/users/1
-Content-Type: application/json
-
-{
-	"profilePic": "kalle"
-}

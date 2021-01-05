@@ -10,13 +10,19 @@ CREATE TABLE users (
 	last_name VARCHAR(50) NOT NULL,
 	username VARCHAR(50) NOT NULL UNIQUE,
 	email VARCHAR(255) NOT NULL UNIQUE,
-	verified SMALLINT NOT NULL DEFAULT '0',
+	verified SMALLINT NOT NULL DEFAULT 0,
 	token varchar(255) DEFAULT NULL,
 	password VARCHAR(255) NOT NULL,
 	gender gender,
 	orientation orientation,
 	bio VARCHAR(1000),
-	tags VARCHAR(255)
+	tags VARCHAR(255),
+	latitude DOUBLE PRECISION,
+	longitude DOUBLE PRECISION,
+	birthdate DATE NOT NULL,
+	fame INTEGER DEFAULT 100,
+	last_online TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+	online SMALLINT NOT NULL DEFAULT 0
 );
 
 CREATE TABLE tags (
@@ -27,15 +33,93 @@ CREATE TABLE photos (
 	id SERIAL PRIMARY KEY,
 	user_id INT NOT NULL,
 	profile_pic SMALLINT NOT NULL DEFAULT '0',
-	photo_str VARCHAR(500000) NOT NULL
+	photo_str VARCHAR(500000) NOT NULL,
+	FOREIGN KEY(user_id)
+		REFERENCES users(user_id)
+		ON DELETE CASCADE
 );
 
-SELECT * FROM photos
-INNER JOIN users ON users.user_id = photos.user_id
-WHERE photos.user_id=2;
+CREATE TABLE likes (
+	like_id SERIAL PRIMARY KEY,
+	from_user_id INT NOT NULL,
+	to_user_id INT NOT NULL,
+	match SMALLINT NOT NULL,
+	unique (from_user_id, to_user_id),
+	FOREIGN KEY(from_user_id)
+		REFERENCES users(user_id)
+		ON DELETE CASCADE,
+	FOREIGN KEY(to_user_id)
+		REFERENCES users(user_id)
+		ON DELETE CASCADE
+);
 
-INSERT INTO users (first_name, last_name, username, email, password)
-	VALUES ('kalle', 'laitela', 'kalle', 'kalle@kalle.fi', 'kalle') RETURNING *;
+CREATE TABLE report (
+	report_id SERIAL PRIMARY KEY,
+	from_user_id INT NOT NULL,
+	to_user_id INT NOT NULL,
+	unique (from_user_id, to_user_id),
+	FOREIGN KEY(from_user_id)
+		REFERENCES users(user_id)
+		ON DELETE CASCADE,
+	FOREIGN KEY(to_user_id)
+		REFERENCES users(user_id)
+		ON DELETE CASCADE
+);
 
-INSERT INTO users (name, username, email, password, gender, orientation)
-	VALUES ($1, $2, $3, $4, $5, $6) RETURNING *
+CREATE TABLE blocked (
+	block_id SERIAL PRIMARY KEY,
+	from_user_id INT NOT NULL REFERENCES users(user_id) ON DELETE CASCADE,
+	to_user_id INT NOT NULL REFERENCES users(user_id) ON DELETE CASCADE,
+	unique (from_user_id, to_user_id)
+);
+
+CREATE TABLE chat (
+	id SERIAL PRIMARY KEY,
+	sender INT NOT NULL,
+	receiver INT NOT NULL,
+	msg VARCHAR(1000),
+	date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+	FOREIGN KEY(sender)
+		REFERENCES users(user_id)
+		ON DELETE CASCADE,
+	FOREIGN KEY(receiver)
+		REFERENCES users(user_id)
+		ON DELETE CASCADE
+);
+
+
+CREATE TABLE IF NOT EXISTS "views"
+(
+	"view_id"      bigserial NOT NULL PRIMARY KEY,
+	"date_created" timestamp DEFAULT CURRENT_TIMESTAMP ,
+	"from_user_id" bigint NOT NULL REFERENCES "users" ( "user_id" ) ON DELETE CASCADE,
+	"to_user_id"   bigint NOT NULL REFERENCES "users" ( "user_id" ) ON DELETE CASCADE,
+	"status" SMALLINT
+);
+
+CREATE TABLE notifications (
+	id SERIAL PRIMARY KEY,
+	user_id INT NOT NULL,
+	from_id INT NOT NULL,
+	read SMALLINT NOT NULL DEFAULT '0',
+	notification TEXT,
+	date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+	FOREIGN KEY(user_id)
+		REFERENCES users(user_id)
+		ON DELETE CASCADE,
+	FOREIGN KEY(from_id)
+		REFERENCES users(user_id)
+		ON DELETE CASCADE
+);
+
+INSERT INTO users (first_name, last_name, username, email, verified, password, gender, orientation, tags, latitude, longitude, birthdate, fame)
+VALUES 
+('hille', 'haa', 'hille', 'hille@h', '1', '$2a$10$PAM0GqbRGkOS2bVupYY0he23LiSv2THGyfvtULZpcdRTzSM7BQ01u', 'female', 'fo', '#hot', 60.1695, 24.9354, '1987-02-1', 100),
+('liina', 'lol', 'liina', 'liina@h', '1', '$2a$10$PAM0GqbRGkOS2bVupYY0he23LiSv2THGyfvtULZpcdRTzSM7BQ01u', 'female', 'fmo', '#hot', 60.1695, 24.9354, '1984-02-1', 100),
+('kaisa', 'varis', 'hiihtaja', 'ski@hi', '1', '$2a$10$PAM0GqbRGkOS2bVupYY0he23LiSv2THGyfvtULZpcdRTzSM7BQ01u', 'female', 'm', '#hot', 60.1695, 24.9354, '1990-02-1', 50),
+('muumi', 'maa', 'muumi', 'peikko@born', '1', '$2a$10$PAM0GqbRGkOS2bVupYY0he23LiSv2THGyfvtULZpcdRTzSM7BQ01u', 'other', 'mo', '#hot', 60.1695, 24.9354, '2000-02-1', 100),
+('ada', 'l', 'ada', 'binar@h', '1', '$2a$10$PAM0GqbRGkOS2bVupYY0he23LiSv2THGyfvtULZpcdRTzSM7BQ01u', 'other', 'f', '#hot', 60.1695, 24.9354, '1999-02-1', 100),
+('heikki', 'h', 'heikki', 'heikki@heikki', '1', '$2a$10$PAM0GqbRGkOS2bVupYY0he23LiSv2THGyfvtULZpcdRTzSM7BQ01u', 'male', 'fmo', '#hot', 60.1695, 24.9354, '1987-02-1', 90),
+('muumi', 'maa', 'muumio', 'peikko@born1', '1', '$2a$10$PAM0GqbRGkOS2bVupYY0he23LiSv2THGyfvtULZpcdRTzSM7BQ01u', 'other', 'mo', '#hot', 61.1695, 24.9354, '2000-02-1', 100),
+('ada', 'l', 'adalmiina', 'binar@h1', '1', '$2a$10$PAM0GqbRGkOS2bVupYY0he23LiSv2THGyfvtULZpcdRTzSM7BQ01u', 'other', 'f', '#hot', 60.1695, 25.1354, '1999-02-1', 100),
+('kalle', 'pihlajakatunen', 'totori', 'ponihepatoequards@gmail.com', '1', '$2a$10$PAM0GqbRGkOS2bVupYY0he23LiSv2THGyfvtULZpcdRTzSM7BQ01u', 'male', 'fmo', '#hot', 60.5695, 24.9354, '1987-02-1', 90)

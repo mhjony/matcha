@@ -1,22 +1,43 @@
 import React from 'react'
 import UserPhotos from './UserPhotos'
 import UpdateUserForm from './UpdateUserForm'
+import Map from './Map/index'
+import VisitHistory from './VisitHistory/index.js'
+import BlockList from './BlockList/index'
+import Togglable from '../UI/Togglable'
+
 
 const UserProfile = ({ user, setUser }) => {
 
-	return <div>
-		<h1 className="text-center mt-3">{user.username}</h1>
+	return <>
+		<h1>{user.username}</h1>
+		<div className='text-left pt-3'>
 
-		<div className="row justify-content-center align-items-center">
-
-			<div className="text-left mt-3 col-md-6 col-sm-6 col-lg-4 col-xs-8">
-
+			<Togglable title='Photos'>
 				<UserPhotos user={user} setUser={setUser} />
-				<UpdateUserForm user={user} setUser={setUser} />
+			</Togglable>
+			<hr />
 
-			</div>
+			<Togglable title='User information'>
+				<UpdateUserForm user={user} setUser={setUser} />
+			</Togglable>
+			<hr />
+
+			<Togglable title='Location'>
+				<Map user={user} setUser={setUser} />
+			</Togglable>
+			<hr />
+
+			<Togglable title='Visit history'>
+				<VisitHistory user={user} value={"fromprofile"}/>
+			</Togglable>
+			<hr />
+
+			<Togglable title='Blocked users'>
+				<BlockList user={user} />
+			</Togglable>
 		</div>
-	</div>
+	</>
 }
 
-export default UserProfile;
+export default UserProfile
