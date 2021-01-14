@@ -5,8 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-	"dev": "nodemon index.js",
-	"lint": "eslint --fix ."
+    "dev": "nodemon index.js",
+    "lint": "eslint --fix ."
   },
   "author": "",
   "license": "ISC",
@@ -23,7 +23,7 @@
     "nodemon": "^2.0.4",
     "pg": "^8.4.1",
     "request-ip": "^2.1.3",
-	"websocket": "^1.0.32"
+    "websocket": "^1.0.32"
   },
   "devDependencies": {
     "eslint": "^7.16.0"

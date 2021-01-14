@@ -8,6 +8,7 @@ const PG_DB = process.env.PG_DB
 const PG_PW = process.env.PG_PW
 const PG_PORT = process.env.PG_PORT
 const TOKEN_SECRET = process.env.TOKEN_SECRET
+const INFO_EMAIL_PASS = process.env.INFO_EMAIL_PASS
 
 module.exports = {
 	PORT,
@@ -16,5 +17,6 @@ module.exports = {
 	PG_DB,
 	PG_PW,
 	PG_PORT,
-	TOKEN_SECRET
+	TOKEN_SECRET,
+	INFO_EMAIL_PASS
 }

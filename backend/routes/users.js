@@ -4,6 +4,7 @@ const bcrypt = require('bcryptjs')
 const nodemailer = require('nodemailer')
 const jwt = require('jsonwebtoken')
 const tokenSecret = require('../utils/config').TOKEN_SECRET
+const info_email_pass = require('../utils/config').INFO_EMAIL_PASS
 
 usersRouter.get('/', (req, resp) => {
 
@@ -91,7 +92,7 @@ usersRouter.post('/', async (req, resp) => {
 			service: 'gmail',
 			auth: {
 				user: 'testing.matcha',
-				pass: 'matcha1234'
+				pass: info_email_pass
 			}
 		})
 
