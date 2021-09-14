@@ -4,6 +4,8 @@ Dating app like Tinder<br />
 React+Node.js+Postgres<br/>
 Hive Helsinki school project
 
+## Deployment version:
+Deployment version of this app is [here](https://matchademo.herokuapp.com/login)
 
 Features
 ---
